@@ -1,0 +1,45 @@
+name: Release serenity-embed-builder
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Get token
+        id: serenity-embed-builder-token
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Run release-please-action
+        uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: ${{ steps.serenity-embed-builder-token.outputs.token }}
+
+      - name: Setup toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Setup cache
+        uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
+        with:
+          prefix-key: "serenity-embed-builder/gh-actions-cache"
+
+      - name: Publish to crates.io
+        if: steps.release.outputs.release_created
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+        run: |
+          cargo publish --token ${{ secrets.CRATES_IO_TOKEN }}
