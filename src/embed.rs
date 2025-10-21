@@ -2,29 +2,80 @@ use serenity::all::{Colour, CreateEmbed};
 
 use crate::model::embed::SerenityEmbed;
 
+/// Errors that can occur when converting a [SerenityEmbed] to a [serenity::all::CreateEmbed].
 #[derive(thiserror::Error, Debug)]
 pub enum SerenityEmbedConvertError {
+    /**
+     * This occurs when the embedded description exceeds 4096 characters and is subject to Discord API limitations.
+     *
+     * Serenity-builder will report an error during conversion.
+     * Serenity does not return an error and leaves the response entirely up to the Discord API.
+     */
     #[error("The description exceeds the maximum length of 4096 characters.")]
-    DescriptionTooLong,
+    TooLongDescription,
+    /**
+     * This occurs when the number of embedded fields exceeds 25 and hits the Discord API limit.
+     *
+     * Serenity-builder will report an error during conversion.
+     * Serenity does not return an error and leaves the response entirely up to the Discord API.
+     */
     #[error("The number of fields exceeds the maximum of 25.")]
     TooManyFields,
 }
 
 impl SerenityEmbed {
     /// Convert the embedded structure created in Builder into a model usable in Serenity.
+    ///
+    /// ```rs
+    /// let embed = SerenityEmbed::builder()
+    ///    .title("This is a test title.")
+    ///    /// ... other fields ...
+    ///   .build();
+    ///
+    /// let serenity_embed = embed.convert()?; // Result<CreateEmbed, SerenityEmbedConvertError>
+    /// ```
+    ///
+    /// # How to use
+    ///
+    /// ```rs
+    /// // 1. Create a SerenityEmbed using the builder
+    /// let embed = SerenityEmbed::builder()
+    ///   .title("This is a test title.")
+    ///   .description("This is a test description.")
+    ///   .build(); // Don't forget!: If you forget this, you won't be able to use `convert()`.
+    ///
+    /// // 2. Convert to Serenity's CreateEmbed
+    /// let serenity_embed = embed.convert()?; // Result<CreateEmbed, SerenityEmbedConvertError>
+    ///
+    /// // 3. Use the converted embed in your Serenity message
+    /// let message = serenity::builder::CreateMessage::default()
+    ///  .content("Here is an embed!")
+    ///  // ... other message fields ...
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// This function may return the following error:
+    ///
+    /// - [`SerenityEmbedConvertError::TooLongDescription`]: The description exceeds the maximum length of 4096 characters.
+    /// - [`SerenityEmbedConvertError::TooManyFields`]: The number of fields exceeds the maximum of 25.
     pub fn convert(&self) -> Result<CreateEmbed, SerenityEmbedConvertError> {
         let mut embed = serenity::builder::CreateEmbed::default();
 
         if let Some(title) = &self.title {
-            embed = embed.title(title.text.clone()).url(title.url.clone())
+            embed = embed.title(title)
         }
 
         if let Some(description) = &self.description {
             if description.len() > 4096 {
-                return Err(SerenityEmbedConvertError::DescriptionTooLong);
+                return Err(SerenityEmbedConvertError::TooLongDescription);
             }
 
             embed = embed.description(description);
+        }
+
+        if let Some(url) = &self.url {
+            embed = embed.url(url);
         }
 
         if let Some(timestamp) = &self.timestamp {
@@ -66,8 +117,7 @@ impl SerenityEmbed {
             if fields.len() > 25 {
                 return Err(SerenityEmbedConvertError::TooManyFields);
             }
-            // 明示的に (String, String, bool) を作って渡すことで
-            // `Into<String>` の曖昧性（複数の impl による推論失敗）を回避する
+            // Explicitly create and pass (String, String, bool) to avoid ambiguity in `Into<String>` (inference failure due to multiple impls).
             let mapped = fields
                 .iter()
                 .map(|f| (f.name.clone(), f.value.clone(), f.inline));
@@ -80,11 +130,9 @@ impl SerenityEmbed {
 
 #[cfg(test)]
 mod tests {
-    use serenity::all::Timestamp;
-
-    use crate::model::embed::{SerenityEmbedField, SerenityEmbedTitle};
-
     use super::*;
+    use crate::model::embed::SerenityEmbedField;
+    use serenity::all::Timestamp;
 
     static MOCK_TEXT: &str = "This is a test text.";
     static MOCK_URL: &str = "https://example.com";
@@ -107,13 +155,9 @@ mod tests {
 
         // serenity-embed-builder
         let mock_embed = SerenityEmbed::builder()
-            .title(
-                SerenityEmbedTitle::builder()
-                    .text(MOCK_TEXT)
-                    .url(MOCK_URL)
-                    .build(),
-            )
+            .title(MOCK_TEXT)
             .description(MOCK_TEXT)
+            .url(MOCK_URL)
             .timestamp(Timestamp::parse(MOCK_TIMESTAMP_STR).unwrap())
             .color(MOCK_COLOR)
             .footer_text(MOCK_TEXT)

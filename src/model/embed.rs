@@ -22,10 +22,17 @@
 pub struct SerenityEmbed {
     /// The title of the embed.
     #[builder(default, setter(strip_option, into))]
-    pub title: Option<SerenityEmbedTitle>,
-    /// The description of the embed. (up to 4096 characters)
+    pub title: Option<String>,
+    /**
+     * The description of the embed.
+     *
+     * Due to Discord API limitations, a maximum of 4096 characters can be used. If the character count exceeds this limit, [crate::embed::SerenityEmbedConvertError::TooLongDescription] will be returned during conversion.
+     */
     #[builder(default, setter(strip_option, into))]
     pub description: Option<String>,
+    // The url of the embed.
+    #[builder(default, setter(strip_option, into))]
+    pub url: Option<String>,
     /**
      * The timestamp of the embed content.
      * It will be displayed at the bottom of the embed.
@@ -34,6 +41,7 @@ pub struct SerenityEmbed {
     pub timestamp: Option<serenity::all::Timestamp>,
     /**
      * The color of the embed.
+     *
      * Serenity uses [serenity::model::colour::Colour], but Builder only allows direct specification from color codes.
      * e.g. `0xff0000` for red.
      */
@@ -60,14 +68,17 @@ pub struct SerenityEmbed {
     /// The author icon url of the embed.
     #[builder(default, setter(strip_option, into))]
     pub author_icon_url: Option<String>,
-    /// The fields of the embed. (up to 25 fields)
+    /**
+     * The fields of the embed. (up to 25 fields)
+     *
+     * Due to Discord API limitations, only 25 fields can be used. Any additional fields will result in a [crate::embed::SerenityEmbedConvertError::TooManyFields] being returned during conversion.
+     */
     #[builder(default, setter(strip_option, into))]
     pub fields: Option<Vec<SerenityEmbedField>>,
 }
 
 /// Title structures used in [SerenityEmbed].
-///
-/// These structures can be used as Vec (arrays) in [SerenityEmbed] and are internally converted to be handled by [serenity::model::Embed].
+/// These structures can be used as Vec (arrays) in [SerenityEmbed] and are internally converted to be handled by [serenity::model::channel::Embed].
 #[derive(serde::Deserialize, typed_builder::TypedBuilder, Clone)]
 pub struct SerenityEmbedTitle {
     /// The text of the title.
@@ -79,8 +90,7 @@ pub struct SerenityEmbedTitle {
 }
 
 /// Field structures used in [SerenityEmbed].
-///
-/// These structures can be used as Vec (arrays) in [SerenityEmbed] and are internally converted to be handled by [serenity::model::Embed].
+/// These structures can be used as Vec (arrays) in [SerenityEmbed] and are internally converted to be handled by [serenity::model::channel::Embed].
 #[derive(serde::Deserialize, typed_builder::TypedBuilder, Clone)]
 pub struct SerenityEmbedField {
     /// The name of the field.
