@@ -30,7 +30,7 @@ impl SerenityEmbed {
         }
 
         if let Some(description) = &self.description {
-            if description.len() >= 4096 {
+            if description.len() > 4096 {
                 return Err(SerenityEmbedConvertError::DescriptionTooLong);
             }
 
