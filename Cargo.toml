@@ -6,6 +6,10 @@ license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/m1sk9/serenity-builder"
 
+[features]
+default = ["embed"]
+embed = []
+
 [dependencies]
 serde = { version = "1.0.228", features = ["derive"] }
 serenity = { version = "0.12.4", features = ["model"] }
