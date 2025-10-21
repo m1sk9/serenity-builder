@@ -82,10 +82,10 @@ pub struct SerenityEmbed {
 #[derive(serde::Deserialize, typed_builder::TypedBuilder, Clone)]
 pub struct SerenityEmbedField {
     /// The name of the field.
-    #[builder(default, setter(into))]
+    #[builder(setter(into))]
     pub name: String,
     /// The value of the field.
-    #[builder(default, setter(into))]
+    #[builder(setter(into))]
     pub value: String,
     /// Whether the field is displayed inline. (default: false)
     #[builder(default = false, setter(into))]
