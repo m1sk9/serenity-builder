@@ -77,18 +77,6 @@ pub struct SerenityEmbed {
     pub fields: Option<Vec<SerenityEmbedField>>,
 }
 
-/// Title structures used in [SerenityEmbed].
-/// These structures can be used as Vec (arrays) in [SerenityEmbed] and are internally converted to be handled by [serenity::model::channel::Embed].
-#[derive(serde::Deserialize, typed_builder::TypedBuilder, Clone)]
-pub struct SerenityEmbedTitle {
-    /// The text of the title.
-    #[builder(setter(into))]
-    pub text: String,
-    /// The url of the title.
-    #[builder(setter(into))]
-    pub url: String,
-}
-
 /// Field structures used in [SerenityEmbed].
 /// These structures can be used as Vec (arrays) in [SerenityEmbed] and are internally converted to be handled by [serenity::model::channel::Embed].
 #[derive(serde::Deserialize, typed_builder::TypedBuilder, Clone)]
