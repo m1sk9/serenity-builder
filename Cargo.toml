@@ -1,10 +1,10 @@
 [package]
-name = "serenity-embed-builder"
+name = "serenity-builder"
 version = "0.1.0"
 edition = "2024"
 license = "Apache-2.0"
 readme = "README.md"
-repository = "https://github.com/m1sk9/serenity-embed-builder"
+repository = "https://github.com/m1sk9/serenity-builder"
 
 [dependencies]
 serde = { version = "1.0.228", features = ["derive"] }
