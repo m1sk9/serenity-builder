@@ -7,7 +7,7 @@
 #![deny(clippy::all)]
 #![allow(dead_code)]
 
-use crate::model::SerenityEmbed;
+use crate::model::embed::SerenityEmbed;
 use serenity::all::{Colour, CreateEmbed};
 
 mod model;
@@ -92,8 +92,9 @@ impl SerenityEmbed {
 mod tests {
     use serenity::all::Timestamp;
 
+    use crate::model::embed::{SerenityEmbedField, SerenityEmbedTitle};
+
     use super::*;
-    use crate::model::{SerenityEmbedField, SerenityEmbedTitle};
 
     static MOCK_TEXT: &str = "This is a test text.";
     static MOCK_URL: &str = "https://example.com";
