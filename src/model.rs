@@ -71,10 +71,10 @@ pub struct SerenityEmbed {
 #[derive(serde::Deserialize, typed_builder::TypedBuilder, Clone)]
 pub struct SerenityEmbedTitle {
     /// The text of the title.
-    #[builder(default, setter(into))]
+    #[builder(setter(into))]
     pub text: String,
-    /// The url of the field.
-    #[builder(default, setter(into))]
+    /// The url of the title.
+    #[builder(setter(into))]
     pub url: String,
 }
 
