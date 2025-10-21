@@ -10,4 +10,4 @@ repository = "https://github.com/m1sk9/serenity-builder"
 serde = { version = "1.0.228", features = ["derive"] }
 serenity = { version = "0.12.4", features = ["model"] }
 thiserror = "2.0.17"
-typed-builder = "0.22.0"
+typed-builder = "0.23.0"
