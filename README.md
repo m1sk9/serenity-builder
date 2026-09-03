@@ -1,3 +1,7 @@
+> [!Important]
+>
+> serenity-builder has been deprecated as of September 3, 2026. No further updates or maintenance will be provided.
+
 # serenity-builder
 
 [![CI](https://github.com/m1sk9/serenity-builder/actions/workflows/ci.yaml/badge.svg)](https://github.com/m1sk9/serenity-builder/actions/workflows/ci.yaml)
